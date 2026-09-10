@@ -26,11 +26,10 @@ const starterNotes: Note[] = [
 
 export default function Home() {
   const [notes, setNotes] = useState<Note[]>(() => {
+    if (typeof window === "undefined") return starterNotes;
+    
     const saved = localStorage.getItem("offline-notes");
-
-    if (!saved) {
-      return starterNotes;
-    }
+    if (!saved) return starterNotes;
 
     try {
       return JSON.parse(saved);
@@ -43,7 +42,7 @@ export default function Home() {
     new Array(steps.length).fill(false)
   );
 
-  const [online, setOnline] = useState(navigator.onLine);
+  const [online, setOnline] = useState(true);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
 
@@ -57,6 +56,8 @@ export default function Home() {
   }, [notes]);
 
   useEffect(() => {
+    setOnline(navigator.onLine);
+
     const handleOnline = () => setOnline(true);
     const handleOffline = () => setOnline(false);
 
@@ -90,7 +91,6 @@ export default function Home() {
     };
 
     setNotes((current) => [newNote, ...current]);
-
     setTitle("");
     setBody("");
   }
